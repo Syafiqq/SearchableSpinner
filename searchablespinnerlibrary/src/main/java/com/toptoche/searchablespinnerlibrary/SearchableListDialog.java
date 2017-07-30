@@ -41,6 +41,7 @@ public class SearchableListDialog extends DialogFragment implements
     private String _strPositiveButtonText;
 
     private DialogInterface.OnClickListener _onClickListener;
+    private String query;
 
     public SearchableListDialog()
     {
@@ -54,6 +55,7 @@ public class SearchableListDialog extends DialogFragment implements
 
         Bundle args = new Bundle();
         args.putSerializable(ITEMS, (Serializable) items);
+        args.putSerializable("query", "");
 
         multiSelectExpandableFragment.setArguments(args);
 
@@ -90,6 +92,7 @@ public class SearchableListDialog extends DialogFragment implements
         if(null != savedInstanceState)
         {
             _searchableItem = (SearchableItem) savedInstanceState.getSerializable("item");
+            this.query = savedInstanceState.getString("query");
         }
         // Change End
 
@@ -118,6 +121,7 @@ public class SearchableListDialog extends DialogFragment implements
     public void onSaveInstanceState(Bundle outState)
     {
         outState.putSerializable("item", _searchableItem);
+        outState.putString("query", _searchView.getQuery().toString());
         super.onSaveInstanceState(outState);
     }
     // Change End
@@ -160,6 +164,10 @@ public class SearchableListDialog extends DialogFragment implements
         _searchView.setOnQueryTextListener(this);
         _searchView.setOnCloseListener(this);
         _searchView.clearFocus();
+        if(this.query != null)
+        {
+            _searchView.setQuery(this.query, false);
+        }
         InputMethodManager mgr = (InputMethodManager) getActivity().getSystemService(Context
                 .INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(_searchView.getWindowToken(), 0);
@@ -191,6 +199,7 @@ public class SearchableListDialog extends DialogFragment implements
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 _searchableItem.onSearchableItemClicked(listAdapter.getItem(position), position);
+                SearchableListDialog.this.query = _searchView.getQuery().toString();
                 getDialog().dismiss();
             }
         });
@@ -216,7 +225,7 @@ public class SearchableListDialog extends DialogFragment implements
         if(TextUtils.isEmpty(s))
         {
             //                _listViewItems.clearTextFilter();
-            ((ArrayAdapter) _listViewItems.getAdapter()).getFilter().filter(null);
+            ((ArrayAdapter) _listViewItems.getAdapter()).getFilter().filter("");
         }
         else
         {
