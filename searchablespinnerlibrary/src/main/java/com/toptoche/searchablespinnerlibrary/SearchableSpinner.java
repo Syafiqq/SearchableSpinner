@@ -25,7 +25,7 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
     private SearchableListDialog _searchableListDialog;
 
     private boolean _isDirty;
-    private ArrayAdapter _arrayAdapter;
+    private DialogArrayAdapter _arrayAdapter;
     private String _strHintText;
     private boolean _isFromInit;
 
@@ -68,7 +68,7 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
         _searchableListDialog.setOnSearchableItemClickListener(this);
         setOnTouchListener(this);
 
-        _arrayAdapter = (ArrayAdapter) getAdapter();
+        _arrayAdapter = (DialogArrayAdapter) getAdapter();
         if(!TextUtils.isEmpty(_strHintText))
         {
             ArrayAdapter arrayAdapter = new ArrayAdapter(_context, android.R.layout
@@ -92,9 +92,9 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
                 // Description: The items were only set initially, not reloading the data in the
                 // spinner every time it is loaded with items in the adapter.
                 _items.clear();
-                for(int i = 0; i < _arrayAdapter.getCount(); i++)
+                for(int i = 0; i < _arrayAdapter.getDialogCount(); i++)
                 {
-                    _items.add(_arrayAdapter.getItem(i));
+                    _items.add(_arrayAdapter.getDialogItem(i));
                 }
                 // Change end.
 
@@ -110,16 +110,18 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
 
         if(!_isFromInit)
         {
-            _arrayAdapter = (ArrayAdapter) adapter;
+            _arrayAdapter = (DialogArrayAdapter) adapter;
             if(!TextUtils.isEmpty(_strHintText) && !_isDirty)
             {
                 ArrayAdapter arrayAdapter = new ArrayAdapter(_context, android.R.layout
                         .simple_list_item_1, new String[] {_strHintText});
                 super.setAdapter(arrayAdapter);
+                this.setDialogAdapter((DialogArrayAdapter) adapter);
             }
             else
             {
                 super.setAdapter(adapter);
+                this.setDialogAdapter((DialogArrayAdapter) adapter);
             }
 
         }
@@ -127,10 +129,11 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
         {
             _isFromInit = false;
             super.setAdapter(adapter);
+            this.setDialogAdapter((DialogArrayAdapter) adapter);
         }
     }
 
-    public void setDialogAdapter(ArrayAdapter adapter)
+    public void setDialogAdapter(DialogArrayAdapter adapter)
     {
         this._searchableListDialog.setAdapter(adapter);
     }
@@ -138,7 +141,7 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
     @Override
     public void onSearchableItemClicked(Object item, int position)
     {
-        setSelection(_items.indexOf(item));
+        setSelection(_arrayAdapter.getPosition(item));
 
         if(!_isDirty)
         {
