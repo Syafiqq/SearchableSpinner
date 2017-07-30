@@ -64,8 +64,7 @@ public class SearchableSpinner extends Spinner implements View.OnTouchListener,
     private void init()
     {
         _items = new ArrayList();
-        _searchableListDialog = SearchableListDialog.newInstance
-                (_items);
+        _searchableListDialog = SearchableListDialog.newInstance(_items);
         _searchableListDialog.setOnSearchableItemClickListener(this);
         setOnTouchListener(this);
 
